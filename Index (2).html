@@ -1,0 +1,434 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Era Vargas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: sticky tab-bar navigating four panels (Resumo, Linha do Tempo, Datas, Simulado); each panel is a single scrolling column capped at reading width */
+:root{
+  --bg:#f3efe4;
+  --paper:#fffdf7;
+  --ink:#241f17;
+  --ink-soft:#5a5141;
+  --accent:#8a3324;
+  --accent-soft:#c9876f;
+  --line:#ded5bf;
+  --gold:#9c7a2e;
+  --good:#3c6e47;
+  --bad:#8a3324;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1b1812;
+    --paper:#262117;
+    --ink:#eee6d3;
+    --ink-soft:#bdb093;
+    --accent:#e2a085;
+    --accent-soft:#8a3324;
+    --line:#3c3527;
+    --gold:#d4b05a;
+    --good:#7bbf8e;
+    --bad:#e2a085;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1b1812;
+  --paper:#262117;
+  --ink:#eee6d3;
+  --ink-soft:#bdb093;
+  --accent:#e2a085;
+  --accent-soft:#8a3324;
+  --line:#3c3527;
+  --gold:#d4b05a;
+  --good:#7bbf8e;
+  --bad:#e2a085;
+  color-scheme: dark;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Source Serif 4", Georgia, "Times New Roman", serif;
+  padding-left:max(16px, env(safe-area-inset-left,0px));
+  padding-right:max(16px, env(safe-area-inset-right,0px));
+}
+h1,h2,h3,.display{font-family:"Fraunces", "Source Serif 4", Georgia, serif;}
+.label, .tabbar button, .eyebrow, th, .meta{font-family:"IBM Plex Mono", ui-monospace, Menlo, monospace;}
+h1,h2,h3{text-wrap:balance}
+p{max-width:65ch; line-height:1.65; color:var(--ink)}
+
+a{color:var(--accent)}
+
+/* top masthead */
+.masthead{
+  max-width:760px; margin:0 auto; padding:28px 0 18px;
+  border-bottom:2px solid var(--ink);
+}
+.eyebrow{
+  font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent);
+}
+.masthead h1{
+  font-size:clamp(28px,6vw,44px); margin:6px 0 4px; font-weight:600; letter-spacing:-0.01em;
+}
+.masthead .sub{margin:0; color:var(--ink-soft); font-size:14px; font-family:"IBM Plex Mono",monospace;}
+
+/* sticky tab bar */
+.tabbar{
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:10;
+  background:var(--bg);
+  display:flex; gap:2px; overflow-x:auto;
+  max-width:760px; margin:0 auto; padding:10px 0;
+  border-bottom:1px solid var(--line);
+  scrollbar-width:none;
+}
+.tabbar::-webkit-scrollbar{display:none}
+.tabbar button{
+  flex:0 0 auto; padding:9px 16px; font-size:12.5px; letter-spacing:.06em; text-transform:uppercase;
+  background:transparent; color:var(--ink-soft); border:1px solid var(--line); border-radius:3px;
+  cursor:pointer;
+}
+.tabbar button[aria-selected="true"]{
+  background:var(--accent); color:var(--paper); border-color:var(--accent);
+}
+body::before{
+  content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px);
+  z-index:10; background:var(--bg);
+}
+
+main{max-width:760px; margin:0 auto; padding:28px 0 72px;}
+.panel{display:none}
+.panel[data-active]{display:block}
+
+/* resumo */
+.era{
+  background:var(--paper); border:1px solid var(--line); border-radius:4px;
+  padding:20px 22px; margin:0 0 22px;
+}
+.era h2{
+  margin:0 0 2px; font-size:21px; display:flex; align-items:baseline; gap:10px;
+}
+.era .years{font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--gold); font-weight:600;}
+.era h3{font-size:14px; margin:18px 0 6px; color:var(--accent); text-transform:uppercase; letter-spacing:.05em;}
+.era ul{margin:6px 0; padding-left:20px}
+.era li{margin-bottom:8px; line-height:1.6}
+.era p{margin:6px 0 0}
+
+.consequence{
+  border-left:3px solid var(--gold); padding:10px 14px; margin-top:14px;
+  background:color-mix(in srgb, var(--gold) 10%, transparent);
+  font-size:14.5px;
+}
+.consequence b{color:var(--gold)}
+
+/* questions guide */
+.qa{background:var(--paper); border:1px solid var(--line); border-radius:4px; padding:16px 20px; margin-bottom:14px;}
+.qa .q{font-weight:600; color:var(--accent); margin:0 0 8px; font-size:15.5px;}
+.qa p{margin:0; font-size:14.5px}
+
+/* timeline */
+.timeline{position:relative; margin:10px 0 0; padding-left:26px; border-left:2px solid var(--line);}
+.tl-item{position:relative; padding-bottom:26px;}
+.tl-item:last-child{padding-bottom:0}
+.tl-item::before{
+  content:""; position:absolute; left:-32px; top:3px; width:11px; height:11px; border-radius:50%;
+  background:var(--accent); border:2px solid var(--bg);
+}
+.tl-date{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--gold); font-weight:600;}
+.tl-item h3{margin:3px 0 4px; font-size:16.5px}
+.tl-item p{margin:0; font-size:14px; color:var(--ink-soft)}
+
+/* table */
+.tablewrap{overflow-x:auto; border:1px solid var(--line); border-radius:4px;}
+table{width:100%; border-collapse:collapse; background:var(--paper); font-size:13.5px; min-width:560px;}
+th{
+  text-align:left; padding:10px 12px; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--ink-soft); border-bottom:1px solid var(--ink); white-space:nowrap;
+}
+td{padding:11px 12px; border-bottom:1px solid var(--line); vertical-align:top; line-height:1.5; font-family:"Source Serif 4",serif;}
+td.date{font-family:"IBM Plex Mono",monospace; color:var(--gold); font-weight:600; white-space:nowrap;}
+tr:last-child td{border-bottom:none}
+
+/* quiz */
+.quiz-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; gap:12px; flex-wrap:wrap;}
+.score{font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--ink-soft); padding:6px 12px; border:1px solid var(--line); border-radius:20px;}
+.score b{color:var(--ink)}
+button.reset{
+  font-family:"IBM Plex Mono",monospace; font-size:12px; background:none; border:1px solid var(--line);
+  color:var(--ink-soft); padding:6px 12px; border-radius:20px; cursor:pointer;
+}
+button.reset:hover{border-color:var(--accent); color:var(--accent)}
+
+.question{background:var(--paper); border:1px solid var(--line); border-radius:4px; padding:18px 20px; margin-bottom:16px;}
+.qnum{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--gold); font-weight:600;}
+.question .stem{margin:6px 0 14px; font-size:15.5px; line-height:1.55}
+.options{display:flex; flex-direction:column; gap:8px;}
+.opt{
+  display:flex; gap:10px; align-items:flex-start; text-align:left; width:100%;
+  padding:10px 12px; border:1px solid var(--line); border-radius:3px; background:transparent;
+  color:var(--ink); font-size:14.5px; font-family:"Source Serif 4",serif; cursor:pointer; line-height:1.45;
+}
+.opt:hover{border-color:var(--accent-soft)}
+.opt .letter{
+  font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:600; color:var(--ink-soft);
+  flex:0 0 auto; width:18px;
+}
+.opt[disabled]{cursor:default}
+.opt.correct{border-color:var(--good); background:color-mix(in srgb, var(--good) 14%, transparent);}
+.opt.correct .letter{color:var(--good)}
+.opt.wrong{border-color:var(--bad); background:color-mix(in srgb, var(--bad) 12%, transparent);}
+.opt.wrong .letter{color:var(--bad)}
+.explain{
+  display:none; margin-top:12px; padding:10px 12px; font-size:13.5px; line-height:1.55;
+  border-left:3px solid var(--gold); color:var(--ink-soft);
+}
+.explain[hidden]{display:none}
+.explain.show{display:block}
+
+footer{max-width:760px; margin:0 auto; padding:0 0 40px; color:var(--ink-soft); font-size:12px; font-family:"IBM Plex Mono",monospace; text-align:center;}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Source+Serif+4:wght@400;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+
+<div class="masthead">
+  <div class="eyebrow">Guia de Estudo</div>
+  <h1>Era Vargas</h1>
+  <p class="sub">1930 — 1945 · Governo Provisório, Constitucional e Estado Novo</p>
+</div>
+
+<nav class="tabbar" role="tablist">
+  <button role="tab" data-tab="resumo" aria-selected="true">Resumo</button>
+  <button role="tab" data-tab="linha">Linha do Tempo</button>
+  <button role="tab" data-tab="datas">Datas-Chave</button>
+  <button role="tab" data-tab="simulado">Simulado</button>
+</nav>
+
+<main>
+
+  <!-- RESUMO -->
+  <section class="panel" data-active data-panel="resumo">
+
+    <div class="era">
+      <h2>Governo Provisório <span class="years">1930–1934</span></h2>
+      <h3>Causas</h3>
+      <p>A Política do Café com Leite rompeu quando Washington Luís indicou outro paulista, Júlio Prestes, quebrando a alternância com Minas Gerais. A crise de 1929 agravou o descontentamento, e a Aliança Liberal (MG + RS + PB) lançou Getúlio Vargas com apoio do Tenentismo. O assassinato de João Pessoa foi o estopim da Revolução de 1930.</p>
+      <h3>Principais fatos</h3>
+      <ul>
+        <li>Vargas revoga a Constituição de 1891, fecha o Congresso e nomeia interventores federais nos estados.</li>
+        <li>Revolução Constitucionalista de 1932: São Paulo pega em armas exigindo uma nova Constituição, após a morte dos estudantes do M.M.D.C.</li>
+        <li>Código Eleitoral de 1932: cria a Justiça Eleitoral, institui o voto secreto e o voto feminino.</li>
+      </ul>
+      <div class="consequence"><b>Consequência →</b> São Paulo é derrotado militarmente, mas Vargas convoca a Constituinte de 1933, encerrando o domínio absoluto das oligarquias cafeeiras.</div>
+    </div>
+
+    <div class="era">
+      <h2>Governo Constitucional <span class="years">1934–1937</span></h2>
+      <h3>Principais fatos</h3>
+      <ul>
+        <li>Constituição de 1934: jornada de 8h, férias remuneradas, salário mínimo, voto feminino oficializado, Justiça do Trabalho.</li>
+        <li>Polarização entre AIB (fascista, Plínio Salgado, "Deus, Pátria e Família") e ANL (esquerda, Luís Carlos Prestes, antifascista).</li>
+        <li>Intentona Comunista (nov/1935): levante armado esmagado; Vargas decreta Estado de Sítio.</li>
+        <li>Plano Cohen (set/1937): documento forjado simulando conspiração comunista — pretexto para o golpe.</li>
+      </ul>
+      <div class="consequence"><b>Consequência →</b> O pânico do Plano Cohen permite o fechamento do Congresso sem resistência popular relevante.</div>
+    </div>
+
+    <div class="era">
+      <h2>Estado Novo <span class="years">1937–1945</span></h2>
+      <h3>Principais fatos</h3>
+      <ul>
+        <li>Golpe de 10/11/1937; Constituição de 1937 ("Polaca"), inspirada na Polônia autoritária.</li>
+        <li>DIP (1939): censura à imprensa e propaganda oficial — "A Hora do Brasil".</li>
+        <li>Repressão de Filinto Müller; CLT sancionada em 1º/5/1943 — Vargas, "pai dos pobres".</li>
+        <li>Industrialização de base: CSN, Vale do Rio Doce, Conselho Nacional do Petróleo.</li>
+        <li>Brasil declara guerra ao Eixo (ago/1942) após afundamento de navios; FEB combate em Monte Castello e Montese.</li>
+      </ul>
+      <div class="consequence"><b>Consequência →</b> Lutar pela democracia na Europa enquanto mantinha ditadura no Brasil tornou-se insustentável. O Queremismo assustou os generais, que depuseram Vargas em 29/10/1945.</div>
+    </div>
+
+    <h3 style="font-size:16px; margin:28px 0 12px; color:var(--ink); text-transform:none; letter-spacing:0;">Perguntas norteadoras</h3>
+    <div class="qa"><p class="q">Por que o país ficou sem Constituição em 1930?</p><p>Vargas assumiu em caráter "provisório", revogou a Constituição de 1891 e governou por decretos para concentrar poder e enfraquecer as oligarquias regionais.</p></div>
+    <div class="qa"><p class="q">Como a polarização política abriu caminho ao autoritarismo?</p><p>A Intentona Comunista (1935) permitiu a Lei de Segurança Nacional; o Plano Cohen (1937), um documento falso, gerou o pânico que justificou o fechamento do Congresso.</p></div>
+    <div class="qa"><p class="q">Por que a ditadura terminou em 1945?</p><p>A contradição de combater o fascismo na Europa com a FEB enquanto mantinha uma ditadura no Brasil tornou-se insustentável; o Queremismo levou os generais a depor Vargas.</p></div>
+  </section>
+
+  <!-- LINHA DO TEMPO -->
+  <section class="panel" data-panel="linha">
+    <div class="timeline" id="timeline"></div>
+  </section>
+
+  <!-- DATAS -->
+  <section class="panel" data-panel="datas">
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Data</th><th>Acontecimento</th><th>Significado</th></tr></thead>
+        <tbody id="datas-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- SIMULADO -->
+  <section class="panel" data-panel="simulado">
+    <div class="quiz-head">
+      <div class="score">Acertos: <b id="score-val">0</b> / <span id="score-total">15</span></div>
+      <button class="reset" id="reset-quiz">Refazer simulado</button>
+    </div>
+    <div id="quiz-root"></div>
+  </section>
+
+</main>
+
+<footer>Era Vargas · 1930–1945</footer>
+
+<script>
+(function(){
+  var timeline = [
+    {date:"03/10/1930", title:"Eclosão da Revolução de 1930", text:"Fim da Primeira República e da hegemonia do café com leite."},
+    {date:"23/05/1932", title:"Morte dos estudantes do M.M.D.C.", text:"Estopim para a Revolução Constitucionalista de São Paulo."},
+    {date:"09/07/1932", title:"Revolução Constitucionalista", text:"São Paulo luta armado por uma nova Constituição."},
+    {date:"1932", title:"Código Eleitoral", text:"Voto secreto, Justiça Eleitoral e voto feminino."},
+    {date:"16/07/1934", title:"Constituição de 1934", text:"Constitucionaliza direitos trabalhistas e o voto feminino."},
+    {date:"nov/1935", title:"Intentona Comunista", text:"Levante armado sufocado; pretexto para mais repressão."},
+    {date:"set/1937", title:"Plano Cohen", text:"Documento falso usado para assustar a população sobre o perigo comunista."},
+    {date:"10/11/1937", title:"Golpe do Estado Novo", text:"Início da ditadura e outorga da Constituição \"Polaca\"."},
+    {date:"27/12/1939", title:"Criação do DIP", text:"Órgão de censura e propaganda oficial do regime."},
+    {date:"31/08/1942", title:"Declaração de guerra ao Eixo", text:"Entrada do Brasil na Segunda Guerra Mundial ao lado dos Aliados."},
+    {date:"01/05/1943", title:"Sancionada a CLT", text:"Unificação dos direitos trabalhistas urbanos."},
+    {date:"jul/1944", title:"Embarque da FEB para a Itália", text:"Pracinhas brasileiros combatem na Segunda Guerra."},
+    {date:"29/10/1945", title:"Deposição de Getúlio Vargas", text:"Fim do Estado Novo e início da redemocratização."}
+  ];
+
+  var tlRoot = document.getElementById('timeline');
+  timeline.forEach(function(item){
+    var el = document.createElement('div');
+    el.className = 'tl-item';
+    el.innerHTML = '<div class="tl-date">'+item.date+'</div><h3>'+item.title+'</h3><p>'+item.text+'</p>';
+    tlRoot.appendChild(el);
+  });
+
+  var datas = [
+    ["03/10/1930","Eclosão da Revolução de 1930.","Fim da Primeira República e da hegemonia do café com leite."],
+    ["23/05/1932","Morte dos estudantes paulistas (M.M.D.C.).","Estopim para a Revolução Constitucionalista de São Paulo."],
+    ["09/07/1932","Eclosão da Revolução Constitucionalista.","Luta armada de SP por uma nova Constituição."],
+    ["1932","Publicação do Código Eleitoral.","Instituiu o voto secreto, a Justiça Eleitoral e o voto feminino."],
+    ["16/07/1934","Promulgação da Constituição de 1934.","Constitucionalização dos direitos trabalhistas e do voto feminino."],
+    ["nov/1935","Intentona Comunista.","Levante armado sufocado; pretexto para aumento da repressão."],
+    ["set/1937","Divulgação do Plano Cohen.","Documento falso usado para assustar a população sobre o perigo comunista."],
+    ["10/11/1937","Golpe do Estado Novo.","Início da ditadura varguista e outorga da Constituição \"Polaca\"."],
+    ["27/12/1939","Criação do DIP.","Órgão de censura e propaganda oficial do regime."],
+    ["31/08/1942","Declaração de guerra ao Eixo.","Entrada do Brasil na Segunda Guerra Mundial ao lado dos Aliados."],
+    ["01/05/1943","Sancionada a CLT.","Unificação dos direitos trabalhistas urbanos."],
+    ["jul/1944","Embarque da FEB para a Itália.","Envio dos pracinhas brasileiros para combater na Segunda Guerra."],
+    ["29/10/1945","Deposição de Getúlio Vargas.","Fim do Estado Novo e início do processo de redemocratização."]
+  ];
+  var datasBody = document.getElementById('datas-body');
+  datas.forEach(function(row){
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td class="date">'+row[0]+'</td><td>'+row[1]+'</td><td>'+row[2]+'</td>';
+    datasBody.appendChild(tr);
+  });
+
+  var questions = [
+    {stem:"A Política do Café com Leite, vigente na Primeira República, caracterizava-se por:", opts:["Uma aliança permanente entre produtores de açúcar do Nordeste e industriais do Sul.","O predomínio político alternado das oligarquias de São Paulo e Minas Gerais na presidência.","A eleição direta de presidentes vindos exclusivamente do Norte do Brasil.","Um acordo que proibia a intervenção do Governo Federal nos estados."], correct:1, explain:"Fundamentava-se no predomínio alternado dos partidos oligárquicos PRP (SP) e PRM (MG)."},
+    {stem:"O estopim político direto que desencadeou a Revolução de 1930 foi:", opts:["A assinatura da CLT em 1º de maio.","O assassinato de João Pessoa, candidato a vice da Aliança Liberal.","A promulgação da Constituição \"Polaca\".","A eclosão da Intentona Comunista."], correct:1, explain:"O assassinato de João Pessoa inflamou o clima político e serviu de estopim."},
+    {stem:"Uma das primeiras medidas de Vargas no Governo Provisório foi:", opts:["A promulgação da Constituição Cidadã de 1988.","A dissolução do Congresso e substituição de governadores por interventores federais.","A declaração de guerra à Alemanha e Itália.","A criação da Petrobras e do Plano de Metas."], correct:1, explain:"Vargas fechou os órgãos legislativos e substituiu governadores por interventores federais."},
+    {stem:"A Revolução Constitucionalista de 1932 teve como principal pauta:", opts:["A defesa do Estado Novo e fechamento da Justiça Eleitoral.","A expropriação de fazendas de café para reforma agrária radical.","A exigência do fim do Governo Provisório e promulgação de nova Constituição.","O apoio à nomeação do interventor João Alberto Lins de Barros."], correct:2, explain:"Motivada pelo descontentamento paulista com a ditadura provisória e exigência de nova Carta Magna."},
+    {stem:"O Código Eleitoral de 1932 trouxe como avanço:", opts:["A exclusão dos trabalhadores urbanos da participação política.","A oficialização do voto secreto e o direito de voto às mulheres.","A liberação do voto para analfabetos e baixas patentes do Exército.","A extinção das eleições diretas municipais e estaduais."], correct:1, explain:"Trouxe o voto secreto, criou a Justiça Eleitoral e estendeu o voto às mulheres."},
+    {stem:"A Constituição de 1934 foi pioneira ao:", opts:["Eliminar a Justiça Eleitoral e restabelecer o voto de cabresto.","Incorporar direitos trabalhistas como salário mínimo e jornada de 8h.","Instituir a ditadura do Estado Novo com mandato vitalício.","Proibir o funcionamento de escolas primárias públicas."], correct:1, explain:"Pioneira ao constitucionalizar direitos sociais e trabalhistas (salário mínimo, jornada de 8h, férias)."},
+    {stem:"A Ação Integralista Brasileira (AIB), de Plínio Salgado, caracterizava-se por:", opts:["Ideologia fascista, anticomunista, lema \"Deus, Pátria e Família\".","Movimento comunista que pregava fim do capitalismo e reforma agrária.","Aliança incondicional com a URSS e não pagamento da dívida.","Partido de intelectuais paulistas que buscava restaurar a monarquia."], correct:0, explain:"A AIB era o movimento fascista brasileiro, adepto das camisas verdes e do lema \"Deus, Pátria e Família\"."},
+    {stem:"A Aliança Nacional Libertadora (ANL), ligada a Luís Carlos Prestes, defendia:", opts:["O modelo corporativista italiano e camisas verdes.","Luta antifascista, reforma agrária e suspensão da dívida externa.","O fortalecimento do coronelismo e retorno do café com leite.","A outorga imediata da Constituição \"Polaca\"."], correct:1, explain:"Frente popular de esquerda que combatia o fascismo e pedia reformas sociais e suspensão da dívida externa."},
+    {stem:"O \"Plano Cohen\", divulgado em setembro de 1937, consistiu em:", opts:["Acordo secreto Brasil-EUA para construir a CSN.","Documento falso forjado para simular um plano comunista e justificar o golpe.","Plano econômico da AIB para estabilizar a moeda.","Tratado Brasil-Alemanha para compra e venda de café."], correct:1, explain:"Documento falso criado no próprio governo, usado para justificar o golpe do Estado Novo."},
+    {stem:"A Constituição de 1937 recebeu o apelido de \"Polaca\" porque:", opts:["Foi traduzida do polonês pelo próprio Vargas.","Foi inspirada na carta autoritária da Polônia, concentrando poder no Executivo.","Foi elaborada por imigrantes poloneses no Rio Grande do Sul.","Garantia o direito de greve e pluralidade partidária."], correct:1, explain:"Inspirada no modelo autoritário e centralizador da Polônia."},
+    {stem:"O DIP, criado no Estado Novo em 1939, tinha como função central:", opts:["Garantir a liberdade de imprensa e financiar jornais de oposição.","Exercer censura e construir a imagem positiva de Vargas pela propaganda.","Organizar eleições diretas para o Congresso.","Promover intercâmbio militar com oficiais alemães."], correct:1, explain:"Centralizava o controle de censura à imprensa e produzia a propaganda oficial do regime."},
+    {stem:"Em 1º de maio de 1943, a CLT representou:", opts:["A abolição dos direitos trabalhistas da Constituição de 1934.","A unificação da legislação trabalhista, atrelando sindicatos ao Estado.","A liberação do trabalho infantil.","A proibição do salário mínimo em indústrias estatais."], correct:1, explain:"Reuniu as leis trabalhistas em um código único, atrelando os sindicatos ao controle governamental."},
+    {stem:"O fator determinante para o Brasil declarar guerra ao Eixo em 1942 foi:", opts:["O ataque de aviões brasileiros a Berlim.","O afundamento de navios mercantes por submarinos alemães e aproximação com os EUA.","A invasão do RS por tropas fascistas italianas.","Exigência soviética na Conferência de Munique."], correct:1, explain:"Após ataques alemães a navios mercantes e acordos de financiamento industrial com os EUA."},
+    {stem:"A FEB atuou militarmente na Segunda Guerra em qual teatro de operações?", opts:["Na invasão da Normandia (Dia D), na França.","Na Batalha de Stalingrado, na URSS.","Na Campanha da Itália, em Monte Castello e Montese.","No combate contra o Japão em Pearl Harbor."], correct:2, explain:"A FEB lutou na Itália entre 1944 e 1945, destacando-se em Monte Castello, Montese e Fornovo di Taro."},
+    {stem:"O movimento \"Queremismo\", em 1945, defendia:", opts:["A renúncia imediata de Vargas e o retorno do café com leite.","A continuidade de Vargas no poder enquanto se elaborava nova Constituição.","O fechamento de todas as indústrias estatais, como a CSN.","O envio de novas tropas brasileiras à Alemanha derrotada."], correct:1, explain:"Movimento popular sob o slogan \"Queremos Getúlio\", apoiando sua permanência em 1945."}
+  ];
+
+  var letters = ['A','B','C','D'];
+  var quizRoot = document.getElementById('quiz-root');
+  var answered = {};
+  var scoreVal = document.getElementById('score-val');
+  document.getElementById('score-total').textContent = questions.length;
+
+  function updateScore(){
+    var correct = 0;
+    Object.keys(answered).forEach(function(k){ if(answered[k]) correct++; });
+    scoreVal.textContent = correct;
+  }
+
+  function renderQuestion(q, idx){
+    var card = document.createElement('div');
+    card.className = 'question';
+    var stem = document.createElement('div');
+    stem.innerHTML = '<div class="qnum">Questão '+(idx+1)+'</div><div class="stem">'+q.stem+'</div>';
+    card.appendChild(stem);
+
+    var optsWrap = document.createElement('div');
+    optsWrap.className = 'options';
+
+    var explain = document.createElement('div');
+    explain.className = 'explain';
+    explain.textContent = q.explain;
+
+    q.opts.forEach(function(optText, i){
+      var btn = document.createElement('button');
+      btn.className = 'opt';
+      btn.innerHTML = '<span class="letter">'+letters[i]+'</span><span>'+optText+'</span>';
+      btn.addEventListener('click', function(){
+        if (card.dataset.done) return;
+        card.dataset.done = '1';
+        var buttons = optsWrap.querySelectorAll('.opt');
+        buttons.forEach(function(b, bi){
+          b.disabled = true;
+          if (bi === q.correct) b.classList.add('correct');
+          else if (bi === i) b.classList.add('wrong');
+        });
+        answered[idx] = (i === q.correct);
+        explain.classList.add('show');
+        updateScore();
+      });
+      optsWrap.appendChild(btn);
+    });
+
+    card.appendChild(optsWrap);
+    card.appendChild(explain);
+    quizRoot.appendChild(card);
+  }
+
+  function buildQuiz(){
+    quizRoot.innerHTML = '';
+    answered = {};
+    questions.forEach(function(q, idx){ renderQuestion(q, idx); });
+    updateScore();
+  }
+  buildQuiz();
+
+  document.getElementById('reset-quiz').addEventListener('click', buildQuiz);
+
+  // tabs
+  var tabs = document.querySelectorAll('.tabbar button');
+  var panels = document.querySelectorAll('.panel');
+  function activate(name){
+    tabs.forEach(function(t){ t.setAttribute('aria-selected', t.dataset.tab === name ? 'true':'false'); });
+    panels.forEach(function(p){
+      if (p.dataset.panel === name) p.setAttribute('data-active','');
+      else p.removeAttribute('data-active');
+    });
+    window.scrollTo({top:0});
+  }
+  tabs.forEach(function(t){
+    t.addEventListener('click', function(){ activate(t.dataset.tab); });
+  });
+
+  if (window.claude && window.claude.hot) {
+    var start = function(data){};
+    window.claude.hot.ready ? window.claude.hot.ready(start) : start({});
+  }
+})();
+</script>
+
+</body></html>
